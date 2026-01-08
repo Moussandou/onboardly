@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { LoginPage } from './pages/auth/LoginPage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
+import { NewOnboardingPage } from './pages/onboarding/NewOnboardingPage';
 import { AuthProvider } from './components/auth/AuthProvider';
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
             <Route path="/onboardings" element={<div>Onboardings List</div>} />
             <Route path="/templates" element={<div>Templates List</div>} />
             <Route path="/settings" element={<div>Settings</div>} />
-            <Route path="/onboarding/new" element={<div>New Onboarding Flow</div>} />
+            <Route path="/onboarding/new" element={<NewOnboardingPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

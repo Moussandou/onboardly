@@ -102,11 +102,35 @@ CREATE POLICY "Manage onboardings of own company" ON onboardings
   FOR ALL USING (company_id = public.get_user_company_id());
 
 -- USERS Profile Creation Trigger
+-- USERS Profile Creation Trigger (Enhanced for MVP)
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
 RETURNS TRIGGER AS $$
+DECLARE
+  new_company_id UUID;
+  new_template_id UUID;
 BEGIN
-  INSERT INTO public.users (id, email, full_name, role)
-  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', 'admin'); -- Default to admin for MVP first user
+  -- 1. Create a default company for the user
+  INSERT INTO public.companies (name)
+  VALUES (COALESCE(new.raw_user_meta_data->>'company_name', 'My Company'))
+  RETURNING id INTO new_company_id;
+
+  -- 2. Create the user profile linked to the company
+  INSERT INTO public.users (id, email, full_name, role, company_id)
+  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', 'admin', new_company_id);
+
+  -- 3. Create a default template for the company
+  INSERT INTO public.templates (company_id, name, description, created_by, is_default)
+  VALUES (new_company_id, 'Standard Onboarding', 'Default checklist for new employees', new.id, true)
+  RETURNING id INTO new_template_id;
+
+  -- 4. Create default tasks for the template
+  INSERT INTO public.tasks (template_id, title, section, deadline_days, "order")
+  VALUES 
+    (new_template_id, 'Sign contract', 'HR', -7, 1),
+    (new_template_id, 'Setup laptop', 'IT', 0, 2),
+    (new_template_id, 'Team introduction', 'Manager', 1, 3),
+    (new_template_id, 'Review documentation', 'General', 2, 4);
+
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
