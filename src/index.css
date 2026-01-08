@@ -1,19 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
   }
- 
-  body {
-    @apply bg-white text-gray-900 font-sans antialiased;
-  }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+  /* Body styles moved to index.html to avoid @apply issues during build initialization */
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    /* Standard CSS equivalent or keeping simple */
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 }
 
